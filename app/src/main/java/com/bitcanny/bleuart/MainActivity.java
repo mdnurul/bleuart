@@ -114,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
         //Logger.log(mLogSession, LogContract.Log.Level.DEBUG, "Get Advertiser");
         mBluetoothLeAdvertiser = mBluetoothAdapter.getBluetoothLeAdvertiser();
         //Logger.log(mLogSession, LogContract.Log.Level.DEBUG, "Open GattServer");
+        //mBluetoothManager.o
         mGattServer = mBluetoothManager.openGattServer(this, mGattServerCallback);
 
         // If everything is okay then start
@@ -182,8 +183,13 @@ public class MainActivity extends AppCompatActivity {
         BluetoothGattCharacteristic TX_READ_CHAR =
                 new BluetoothGattCharacteristic(UARTProfile.TX_READ_CHAR,
                         //Read-only characteristic, supports notifications
-                        BluetoothGattCharacteristic.PROPERTY_READ | BluetoothGattCharacteristic.PROPERTY_NOTIFY,
-                        BluetoothGattCharacteristic.PERMISSION_READ);
+                        //BluetoothGattCharacteristic.PROPERTY_READ | BluetoothGattCharacteristic.PROPERTY_NOTIFY,
+                        //BluetoothGattCharacteristic.PERMISSION_READ);
+                        BluetoothGattCharacteristic.PROPERTY_READ |  BluetoothGattCharacteristic.PROPERTY_WRITE | BluetoothGattCharacteristic.PROPERTY_NOTIFY,
+                        BluetoothGattCharacteristic.PERMISSION_WRITE_ENCRYPTED | BluetoothGattCharacteristic.PERMISSION_READ_ENCRYPTED);
+
+                        //BluetoothGattCharacteristic.PERMISSION_READ_ENCRYPTED_MITM | BluetoothGattCharacteristic.PROPERTY_NOTIFY,
+                        //BluetoothGattCharacteristic.PERMISSION_WRITE_ENCRYPTED_MITM);
 
         //Descriptor for read notifications
         BluetoothGattDescriptor TX_READ_CHAR_DESC = new BluetoothGattDescriptor(UARTProfile.TX_READ_CHAR_DESC, UARTProfile.DESCRIPTOR_PERMISSION);
@@ -193,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
         BluetoothGattCharacteristic RX_WRITE_CHAR =
                 new BluetoothGattCharacteristic(UARTProfile.RX_WRITE_CHAR,
                         //write permissions
-                        BluetoothGattCharacteristic.PROPERTY_WRITE, BluetoothGattCharacteristic.PERMISSION_WRITE);
+                        BluetoothGattCharacteristic.PROPERTY_WRITE, BluetoothGattCharacteristic.PERMISSION_WRITE_ENCRYPTED);
 
 
         UART_SERVICE.addCharacteristic(TX_READ_CHAR);
@@ -232,7 +238,6 @@ public class MainActivity extends AppCompatActivity {
                     if (mConnectedDevicesAdapter.getPosition(device) < 0) {
                         mConnectedDevicesAdapter.add(device);
                     }
-
                 } else {
                     mConnectedDevicesAdapter.remove(device);
                 }
@@ -309,8 +314,10 @@ public class MainActivity extends AppCompatActivity {
                             BluetoothGatt.GATT_SUCCESS,
                             0,
                             value);
-                    myRec = Arrays.toString(value);
+                    myRec = new String(value);
                 }
+
+                //String s = new String(bytes);
 
                 dataManager.addPacket(value);
                 if (dataManager.isMessageComplete()){
